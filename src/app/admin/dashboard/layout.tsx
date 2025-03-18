@@ -1,17 +1,14 @@
 "use client";
 
-import { Layout, Menu, Button, Typography } from "antd";
-import {
-  UserOutlined,
-  FileTextOutlined,
-  LogoutOutlined,
-} from "@ant-design/icons";
 import { useRouter, usePathname } from "next/navigation";
-import styled from "styled-components";
 import { useEffect, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
+import { Button } from "@/components/ui/button";
+import { Layout, LayoutHeader, LayoutSidebar, LayoutContent } from "@/components/ui/layout"; 
 
-const { Header, Sider, Content } = Layout;
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { LogOut, FileText, User } from "lucide-react";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -21,12 +18,12 @@ const supabase = createClient(
 const menuItems = [
   {
     key: "/admin/dashboard/commissions",
-    icon: <FileTextOutlined />,
+    icon: <FileText className="h-4 w-4" />,
     label: "Commissions",
   },
   {
     key: "/admin/dashboard/users",
-    icon: <UserOutlined />,
+    icon: <User className="h-4 w-4" />,
     label: "Users",
   },
 ];
@@ -65,67 +62,42 @@ export default function DashboardLayout({
   };
 
   return (
-    <StyledLayout>
-      <Sider
-        collapsible
-        collapsed={collapsed}
-        onCollapse={(value) => setCollapsed(value)}
-      >
-        <div
-          style={{
-            height: "64px",
-            color: "white",
-            textAlign: "center",
-            lineHeight: "64px",
-          }}
-        >
+    <div className="min-h-screen flex">
+      {/* Sidebar */}
+      <div className={`bg-gray-900 text-white ${collapsed ? "w-16" : "w-64"} transition-all duration-300`}>
+        <div className="h-16 flex items-center justify-center">
           {collapsed ? "🎨" : "Artist Panel"}
         </div>
-        <Menu
-          theme="dark"
-          mode="inline"
-          selectedKeys={[pathname]}
-          onClick={({ key }) => router.push(key)}
-          items={menuItems}
-        />
-      </Sider>
-      <Layout>
-        <StyledHeader>
-          <ArtistName>{artistName}</ArtistName>
-          <Button
-            icon={<LogoutOutlined />}
-            type="text"
-            onClick={handleLogout}
-            style={{ color: "white" }}
-          >
+        <nav className="mt-4">
+          {menuItems.map((item) => (
+            <div
+              key={item.key}
+              className={`flex items-center p-3 hover:bg-gray-700 cursor-pointer ${
+                pathname === item.key ? "bg-gray-700" : ""
+              }`}
+              onClick={() => router.push(item.key)}
+            >
+              {item.icon}
+              {!collapsed && <span className="ml-2">{item.label}</span>}
+            </div>
+          ))}
+        </nav>
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col">
+        {/* Header */}
+        <header className="bg-gray-800 text-white p-4 flex justify-between items-center">
+          <div className="text-xl font-bold">{artistName}</div>
+          <Button variant="ghost" onClick={handleLogout}>
+            <LogOut className="h-4 w-4 mr-2" />
             Logout
           </Button>
-        </StyledHeader>
-        <StyledContent>{children}</StyledContent>
-      </Layout>
-    </StyledLayout>
+        </header>
+
+        {/* Content */}
+        <main className="p-6 bg-gray-100 flex-1">{children}</main>
+      </div>
+    </div>
   );
 }
-const StyledLayout = styled(Layout)`
-  min-height: 100vh;
-`;
-
-const StyledHeader = styled(Header)`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 24px;
-  background: #001529;
-  color: white;
-`;
-
-const ArtistName = styled(Typography.Text)`
-  color: white;
-  font-size: 1.25rem;
-  font-weight: bold;
-`;
-
-const StyledContent = styled(Content)`
-  padding: 24px;
-  background-color: #fff;
-`;
