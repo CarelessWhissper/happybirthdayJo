@@ -42,7 +42,7 @@ export function TestimonialsSection() {
               whileInView={{ y: 0, opacity: 1 }}
               transition={{ delay: index * 0.5, duration: 1 }}
             >
-              <p className="text-gray-300 italic">"{testimonial.comment}"</p>
+              <p className="text-gray-300 italic">&quot;{testimonial.comment}&quot;</p>
               <p className="mt-4 font-bold">- {testimonial.name}</p>
             </motion.div>
           ))}
